@@ -13,38 +13,70 @@ namespace BethanysPieShop.InventoryManagement
         private string? description;
 
         private int maxItemsInStock = 0;
-        private UnitType unitType;
-        private int amountInStock = 0;
-        private bool isBelowStockTreshold = false;
+        //private UnitType unitType;
+        //private int amountInStock = 0;
+        //private bool isBelowStockTreshold = false;
+
+        public int Id 
+        { 
+            get { return id; } 
+            set {  id = value; } 
+        }
+        public string Name 
+        { 
+            get { return name; } 
+            set { name = value.Length > 50 ? value[..50] : value;} 
+        }
+        //checks the value of the name, if longer than 50, truncate it to 50
+        public string? Description 
+        { 
+            get { return description; } 
+            set 
+            { 
+                if (value == null) 
+                { 
+                    description = string.Empty; 
+                } 
+                else 
+                { 
+                    description = value.Length > 250 ? value[..250] : value;
+                    //checks the value of the desc, if longer than 250, truncate it to 250
+                }
+            } 
+        }
+        public UnitType UnitType { get;  set; }
+        public int AmountInStock { get; private set; }
+        public bool IsBelowStockTreshold { get; private set; }
+        //these are auto properties, no need for the private fields above
 
         public void UseProduct (int items)
         {
-            if (items <= amountInStock)
+            if (items <= AmountInStock)
             {
-                amountInStock -= items;
+                AmountInStock -= items;
                 UpdateLowStockFlag();
-                Log($"Amount in stock updated. Now {amountInStock} items in stock.");
+                Log($"Amount in stock updated. Now {AmountInStock} items in stock.");
             }
             else
             {
-                Log($"Not enough items on stock for {SimpleProductRepresetation()}. {amountInStock} available but {items} requested.");
+                Log($"Not enough items on stock for {SimpleProductRepresetation()}. {AmountInStock} available but {items} requested.");
             }
         }
 
         public void IncreaseStock()
         {
-            amountInStock++;
+            AmountInStock++;
         }
 
         public void DecreaseStock(int items, string reason)
         {
-            if (items <=amountInStock)
+            if (items <=AmountInStock)
             {
-                amountInStock -= items;
+                AmountInStock -= items;
             }
             else
             {
-                amountInStock = 0;
+                AmountInStock = 0;
             }
             UpdateLowStockFlag();
             Log(reason);
@@ -53,9 +85,9 @@ namespace BethanysPieShop.InventoryManagement
         {
             StringBuilder sb = new ();
             //ToDo: add price here too
-            sb.Append($"{id} {name} \n{description}\n{amountInStock} item(s) in stock");
+            sb.Append($"{id} {name} \n{description}\n{AmountInStock} item(s) in stock");
 
-            if (isBelowStockTreshold)
+            if (IsBelowStockTreshold)
             {
                 sb.Append("\nSTOCK LOW!!");
             }
@@ -64,9 +96,9 @@ namespace BethanysPieShop.InventoryManagement
 
         private void UpdateLowStockFlag()
         {
-            if (amountInStock < 10) //for now a fixed value, can be updated to set a low stock value for different products
+            if (AmountInStock < 10) //for now a fixed value, can be updated to set a low stock value for different products
             {
-                isBelowStockTreshold = true;
+                IsBelowStockTreshold = true;
             }
         }
 
