@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BethanysPieShop.InventoryManagement.Domain.ProductManagement
 {
-    internal enum UnitType
+    public enum UnitType
     {
         PerItem,
         PerBox,

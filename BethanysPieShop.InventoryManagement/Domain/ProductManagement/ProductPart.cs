@@ -6,11 +6,17 @@ using System.Threading.Tasks;
 
 namespace BethanysPieShop.InventoryManagement.Domain.ProductManagement
 {
-    internal partial class Product
+    public partial class Product
     {
+        public static int StockThreshold = 5;
+        public static void ChangeStockThreshold (int newStockThreshold)
+        {
+            if (newStockThreshold > 0)//only update if value is above 0
+                StockThreshold = newStockThreshold;
+        }
         private void UpdateLowStockFlag()
         {
-            if (AmountInStock < 10) //for now a fixed value, can be updated to set a low stock value for different products
+            if (AmountInStock < StockThreshold) //for now a fixed value, can be updated to set a low stock value for different products
             {
                 IsBelowStockTreshold = true;
             }

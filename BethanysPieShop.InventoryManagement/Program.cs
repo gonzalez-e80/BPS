@@ -3,7 +3,9 @@ using BethanysPieShop.InventoryManagement.Domain.ProductManagement;
 
 PrintWelcome();
 
-//Create inventory
+Product.ChangeStockThreshold(10); //this is using the class, changing the value for all of them
+Product.StockThreshold = 10;
+
 //Price samplePrice = new Price(10, Currency = Currency.Euro);
 Price samplePrice = new Price() { ItemPrice = 10, Currency = Currency.Euro};
 
@@ -17,6 +19,8 @@ p1.Description = "Sample description";
 //Product p3 = new(3, "Strawberry", "Lorem ipsum", samplePrice, UnitType.PerBox, 10);
 
 var p2 = new Product(2, "Cake decorations", "Lorem ipsum", new Price() { ItemPrice = 8, Currency = Currency.Euro }, UnitType.PerItem, 20);
+p2.Description = "Another description";
+
 Product p3 = new(3, "Strawberry", "Lorem ipsum", new Price() { ItemPrice = 3, Currency = Currency.Euro }, UnitType.PerBox, 10);
 
 Console.WriteLine("Application shutting down...");
