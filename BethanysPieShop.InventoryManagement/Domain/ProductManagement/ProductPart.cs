@@ -8,32 +8,26 @@ namespace BethanysPieShop.InventoryManagement.Domain.ProductManagement
 {
     public partial class Product
     {
-        public static int StockThreshold = 5;
-        public static void ChangeStockThreshold (int newStockThreshold)
+
+        public static int StockTreshold = 5;
+
+        public static void ChangeStockTreshold(int newStockTreshhold)
         {
-            if (newStockThreshold > 0)//only update if value is above 0
-                StockThreshold = newStockThreshold;
+            //we will only allow this to go through if the value is > 0
+            if (newStockTreshhold > 0)
+                StockTreshold = newStockTreshhold;
         }
-        private void UpdateLowStockFlag()
-        {
-            if (AmountInStock < StockThreshold) //for now a fixed value, can be updated to set a low stock value for different products
-            {
-                IsBelowStockTreshold = true;
-            }
-            else
-            {
-                IsBelowStockTreshold = false;
-            }
-        }
+
 
         private void Log(string message)
         {
-            Console.WriteLine(message); //Messages are printed to the console but the method is implemented in case you wanted to write them somewhere else
+            //this could be written to a file
+            Console.WriteLine(message);
         }
 
-        private string SimpleProductRepresetation()
+        private string CreateSimpleProductRepresentation()
         {
-            return $"Product {id} ({name})";
+            return $"Product {Id} ({Name})";
         }
     }
 }
