@@ -49,6 +49,12 @@ namespace BethanysPieShop.InventoryManagement
         public bool IsBelowStockTreshold { get; private set; }
         //these are auto properties, no need for the private fields above
 
+        public Product (int id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
+
         public void UseProduct (int items)
         {
             if (items <= AmountInStock)
