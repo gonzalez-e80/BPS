@@ -52,10 +52,10 @@ namespace BethanysPieShop.InventoryManagement
         public Product (int id) : this (id, string.Empty)
         { 
         }
-        public Product (int id, string name)
+        public Product (int Id, string Name)
         {
-            Id = id;
-            Name = name;
+            this.Id = Id; //using the this keyword, ge ar referencing an istance of the property passing in the value from the cosntructor
+            this.Name = Name;
         }
         public Product (int id, string name, string? description, UnitType unitType, int maxAmountinStock)
         {
