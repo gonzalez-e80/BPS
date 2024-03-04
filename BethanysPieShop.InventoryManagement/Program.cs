@@ -4,9 +4,11 @@ using BethanysPieShop.InventoryManagement.Domain.ProductManagement;
 PrintWelcome();
 
 //Create inventory
+//Price samplePrice = new Price(10, Currency = Currency.Euro);
 Price samplePrice = new Price() { ItemPrice = 10, Currency = Currency.Euro};
 
-Product p1 = new Product(1, "Sugar", "Lorem ipsum", samplePrice, UnitType.PerKg, 100);
+//Product p1 = new Product(1, "Sugar", "Lorem ipsum", samplePrice, UnitType.PerKg, 100);
+Product p1 = new Product(1) { Name = "Sugar", Description = "Lorem ipsum", Price = samplePrice, UnitType = UnitType.PerKg };
 p1.IncreaseStock(10);
 p1.Description = "Sample description";
 var p2 = new Product(2, "Cake decorations", "Lorem ipsum", samplePrice, UnitType.PerItem, 20);
