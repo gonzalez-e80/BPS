@@ -49,11 +49,25 @@ namespace BethanysPieShop.InventoryManagement
         public bool IsBelowStockTreshold { get; private set; }
         //these are auto properties, no need for the private fields above
 
+        public Product (int id) : this (id, string.Empty)
+        { 
+        }
         public Product (int id, string name)
         {
             Id = id;
             Name = name;
         }
+        public Product (int id, string name, string? description, UnitType unitType, int maxAmountinStock)
+        {
+            Id = id;
+            Name = name;
+            Description = description;
+            UnitType = unitType;
+            maxItemsInStock = maxAmountinStock;
+            UpdateLowStockFlag();
+        }
+        //Cosntrucor Overloading
+
 
         public void UseProduct (int items)
         {
@@ -73,6 +87,20 @@ namespace BethanysPieShop.InventoryManagement
         {
             AmountInStock++;
         }
+        public void IncreaseStock(int amount)
+        {
+            int newStock = AmountInStock + amount;
+            if (newStock <= maxItemsInStock) 
+            {
+                AmountInStock = amount;
+            }
+            else
+            {
+                AmountInStock = maxItemsInStock; //storing what is possible, overstock is ignored
+                Log($"{SimpleProductRepresetation} stock overflow. {newStock - AmountInStock}item(s) ordered that could not be stored.");
+            }
+            UpdateLowStockFlag() ;
+        }
 
         public void DecreaseStock(int items, string reason)
         {
@@ -89,9 +117,15 @@ namespace BethanysPieShop.InventoryManagement
         }
         public string DisplayDetailsFull()
         {
-            StringBuilder sb = new ();
+            return DisplayDetailsFull("");
+        }
+
+        public string DisplayDetailsFull(string extraDetails) 
+        {
+            StringBuilder sb = new StringBuilder();
             //ToDo: add price here too
             sb.Append($"{id} {name} \n{description}\n{AmountInStock} item(s) in stock");
+            sb.Append(extraDetails);
 
             if (IsBelowStockTreshold)
             {
@@ -99,12 +133,17 @@ namespace BethanysPieShop.InventoryManagement
             }
             return sb.ToString();
         }
+        //Method Overloading
 
         private void UpdateLowStockFlag()
         {
             if (AmountInStock < 10) //for now a fixed value, can be updated to set a low stock value for different products
             {
                 IsBelowStockTreshold = true;
+            }
+            else
+            {
+                IsBelowStockTreshold = false;
             }
         }
 
