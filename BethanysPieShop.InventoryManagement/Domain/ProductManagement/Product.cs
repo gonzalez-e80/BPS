@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BethanysPieShop.InventoryManagement.Domain.ProductManagement
 {
-    internal class Product
+    internal partial class Product
     {
         private int id;
         private string name = string.Empty;
@@ -68,7 +68,7 @@ namespace BethanysPieShop.InventoryManagement.Domain.ProductManagement
             maxItemsInStock = maxAmountinStock;
             UpdateLowStockFlag();
         }
-        //Cosntrucor Overloading
+        //Constructor Overloading
 
 
         public void UseProduct(int items)
@@ -136,27 +136,5 @@ namespace BethanysPieShop.InventoryManagement.Domain.ProductManagement
             return sb.ToString();
         }
         //Method Overloading
-
-        private void UpdateLowStockFlag()
-        {
-            if (AmountInStock < 10) //for now a fixed value, can be updated to set a low stock value for different products
-            {
-                IsBelowStockTreshold = true;
-            }
-            else
-            {
-                IsBelowStockTreshold = false;
-            }
-        }
-
-        private void Log(string message)
-        {
-            Console.WriteLine(message); //Messages are printed to the console but the method is implemented in case you wanted to write them somewhere else
-        }
-
-        private string SimpleProductRepresetation()
-        {
-            return $"Product {id} ({name})";
-        }
     }
 }
