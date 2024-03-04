@@ -77,7 +77,7 @@ namespace BethanysPieShop.InventoryManagement
 
         private string SimpleProductRepresetation()
         {
-            return $"Product {id} ({name})";
+            return $"Product {id} ({name})"; 
         }
     }
 }
