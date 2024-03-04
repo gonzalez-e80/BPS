@@ -3,27 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using BethanysPieShop.InventoryManagement.Domain.General;
 using BethanysPieShop.InventoryManagement.Domain.OrderManagement;
 using BethanysPieShop.InventoryManagement.Domain.ProductManagement;
 
 namespace BethanysPieShop.InventoryManagement
 {
     internal class Utilities
-    //this is for the ui of the application
     {
         private static List<Product> inventory = new();
         private static List<Order> orders = new();
 
         internal static void InitializeStock()//Mock implementation
         {
-            Product p1 = new Product(1, "Sugar", "Lorem ipsum", new Price() { ItemPrice = 10, Currency = Currency.Euro }, UnitType.PerKg, 100);
-            Product p2 = new Product(2, "Cake decorations", "Lorem ipsum", new Price() { ItemPrice = 8, Currency = Currency.Euro }, UnitType.PerItem, 20);
-            Product p3 = new Product(3, "Strawberry", "Lorem ipsum", new Price() { ItemPrice = 3, Currency = Currency.Euro }, UnitType.PerBox, 10);
-            inventory.Add(p1);
-            inventory.Add(p2);
-            inventory.Add(p3);
+            //inventory.Add(new Product(1, "Sugar", "Lorem ipsum", new Price() { ItemPrice = 10, Currency = Currency.Euro }, UnitType.PerKg, 100));
+            //inventory.Add(new Product(2, "Cake decorations", "Lorem ipsum", new Price() { ItemPrice = 8, Currency = Currency.Euro }, UnitType.PerItem, 20));
+            //inventory.Add(new Product(3, "Strawberry", "Lorem ipsum", new Price() { ItemPrice = 3, Currency = Currency.Euro }, UnitType.PerBox, 10));
+
+            ProductRepository productRepository = new();
+            inventory = productRepository.LoadProductsFromFile();
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"Loaded {inventory.Count} products!");
+
+            Console.WriteLine("Press enter to continue!");
+            Console.ResetColor();
+
+            Console.ReadLine();
         }
 
         internal static void ShowMainMenu()
@@ -119,7 +124,6 @@ namespace BethanysPieShop.InventoryManagement
             while (userSelection != "0");
             ShowMainMenu();
         }
-
 
         private static void ShowAllProductsOverview()
         {
@@ -380,5 +384,6 @@ namespace BethanysPieShop.InventoryManagement
 
             Console.ReadLine();
         }
+
     }
 }
