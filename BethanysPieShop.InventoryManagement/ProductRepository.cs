@@ -10,7 +10,7 @@ namespace BethanysPieShop.InventoryManagement
 {
     internal class ProductRepository
     {
-        private string directory = @"D:\data\BethanysPieShop\";
+        private string directory = @"C:\Users\gonzalez.e\OneDrive - Elettric 80\Documents\BPS_File\";
         private string productsFileName = "products.txt";
 
         private void CheckForExistingProductFile()
