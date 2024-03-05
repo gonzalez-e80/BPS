@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BethanysPieShop.InventoryManagement.Domain.General;
 using BethanysPieShop.InventoryManagement.Domain.OrderManagement;
 using BethanysPieShop.InventoryManagement.Domain.ProductManagement;
 
@@ -18,6 +19,11 @@ namespace BethanysPieShop.InventoryManagement
             //inventory.Add(new Product(1, "Sugar", "Lorem ipsum", new Price() { ItemPrice = 10, Currency = Currency.Euro }, UnitType.PerKg, 100));
             //inventory.Add(new Product(2, "Cake decorations", "Lorem ipsum", new Price() { ItemPrice = 8, Currency = Currency.Euro }, UnitType.PerItem, 20));
             //inventory.Add(new Product(3, "Strawberry", "Lorem ipsum", new Price() { ItemPrice = 3, Currency = Currency.Euro }, UnitType.PerBox, 10));
+
+            BoxedProduct bp = new BoxedProduct(6, "Eggs", "Lorem ipsum", new Price() { ItemPrice = 10, Currency = Currency.Euro }, 100, 6);
+
+            bp.IncreaseStock(100);
+            bp.UseProduct(10);
 
             ProductRepository productRepository = new();
             inventory = productRepository.LoadProductsFromFile();

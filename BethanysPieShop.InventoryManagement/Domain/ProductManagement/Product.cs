@@ -124,7 +124,7 @@ namespace BethanysPieShop.InventoryManagement.Domain.ProductManagement
             UpdateLowStock();
         }
 
-        private void DecreaseStock(int items, string reason)
+        protected void DecreaseStock(int items, string reason)
         {
             if (items <= AmountInStock)
             {
