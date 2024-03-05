@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BethanysPieShop.InventoryManagement.Domain.Contracts;
 using BethanysPieShop.InventoryManagement.Domain.General;
 using BethanysPieShop.InventoryManagement.Domain.OrderManagement;
 using BethanysPieShop.InventoryManagement.Domain.ProductManagement;
@@ -19,11 +20,6 @@ namespace BethanysPieShop.InventoryManagement
             //inventory.Add(new Product(1, "Sugar", "Lorem ipsum", new Price() { ItemPrice = 10, Currency = Currency.Euro }, UnitType.PerKg, 100));
             //inventory.Add(new Product(2, "Cake decorations", "Lorem ipsum", new Price() { ItemPrice = 8, Currency = Currency.Euro }, UnitType.PerItem, 20));
             //inventory.Add(new Product(3, "Strawberry", "Lorem ipsum", new Price() { ItemPrice = 3, Currency = Currency.Euro }, UnitType.PerBox, 10));
-
-            BoxedProduct bp = new BoxedProduct(6, "Eggs", "Lorem ipsum", new Price() { ItemPrice = 10, Currency = Currency.Euro }, 100, 6);
-
-            bp.IncreaseStock(100);
-            bp.UseProduct(10);
 
             ProductRepository productRepository = new();
             inventory = productRepository.LoadProductsFromFile();
@@ -66,7 +62,7 @@ namespace BethanysPieShop.InventoryManagement
                     ShowSettingsMenu();
                     break;
                 case "4":
-                    //SaveAllData();
+                    SaveAllData();
                     break;
                 case "0":
                     break;
@@ -74,6 +70,23 @@ namespace BethanysPieShop.InventoryManagement
                     Console.WriteLine("Invalid selection. Please try again.");
                     break;
             }
+        }
+
+        private static void SaveAllData()
+        {
+            ProductRepository productRepository = new();
+
+            List<ISaveable> saveables = new List<ISaveable>();
+
+            foreach (var item in inventory)//now a list of Products
+            {
+                saveables.Add(item as ISaveable);
+            }
+
+            productRepository.SaveToFile(saveables);
+
+            Console.ReadLine();
+            ShowMainMenu();
         }
 
         private static void ShowInventoryManagementMenu()
@@ -111,11 +124,11 @@ namespace BethanysPieShop.InventoryManagement
                         break;
 
                     case "2":
-                        //ShowCreateNewProduct();
+                        ShowCreateNewProduct();
                         break;
 
                     case "3":
-                        //ShowCloneExistingProduct();
+                        ShowCloneExistingProduct();
                         break;
 
                     case "4":
@@ -129,6 +142,39 @@ namespace BethanysPieShop.InventoryManagement
             }
             while (userSelection != "0");
             ShowMainMenu();
+        }
+
+        private static void ShowCloneExistingProduct()
+        {
+            string? userSelection = string.Empty;
+            string? newId = string.Empty;
+
+            Console.Write("Enter the ID of product to clone: ");
+            string? selectedProductId = Console.ReadLine();
+
+            if (selectedProductId != null)
+            {
+                Product? selectedProduct = inventory.Where(p => p.Id == int.Parse(selectedProductId)).FirstOrDefault();
+
+                if (selectedProduct != null)
+                {
+                    Console.Write("Enter the new ID of the cloned product: ");
+
+                    newId = Console.ReadLine();
+
+                    Product? p = selectedProduct.Clone() as Product;
+
+                    if (p != null)
+                    {
+                        p.Id = int.Parse(newId);
+                        inventory.Add(p);
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Non-existing product selected. Please try again.");
+            }
         }
 
         private static void ShowAllProductsOverview()
@@ -177,6 +223,113 @@ namespace BethanysPieShop.InventoryManagement
             else
             {
                 Console.WriteLine("Non-existing product selected. Please try again.");
+            }
+        }
+
+        private static void ShowCreateNewProduct()
+        {
+            UnitType unitType = UnitType.PerItem;//default
+
+            Console.WriteLine("What type of product do you want to create?");
+            Console.WriteLine("1. Regular product\n2. Bulk product\n3. Fresh product\n4. Boxed product");
+            Console.Write("Your selection: ");
+
+            var productType = Console.ReadLine();
+            if (productType != "1" && productType != "2" && productType != "3"
+                && productType != "4")
+            {
+                Console.WriteLine("Invalid selection!");
+                return;
+            }
+
+            Product? newProduct = null;
+
+            Console.Write("Enter the name of the product: ");
+            string name = Console.ReadLine() ?? string.Empty;
+
+            Console.Write("Enter the price of the product: ");
+            double price = double.Parse(Console.ReadLine() ?? "0.0");
+
+            ShowAllCurrencies();
+            Console.Write("Select the currency: ");
+            Currency currency = (Currency)Enum.Parse(typeof(Currency), Console.ReadLine() ?? "1");
+
+            Console.Write("Enter the description of the product: ");
+            string description = Console.ReadLine() ?? string.Empty;
+
+
+            if (productType == "1")
+            {
+                ShowAllUnitTypes();
+                Console.Write("Select the unit type: ");
+                unitType = (UnitType)Enum.Parse(typeof(UnitType), Console.ReadLine() ?? "1");
+            }
+
+            Console.Write("Enter the maximum number of items in stock for this product: ");
+            int maxInStock = int.Parse(Console.ReadLine() ?? "0");
+
+            int newId = inventory.Max(p => p.Id) + 1;//find highest id and increase with 1
+
+            switch (productType)
+            {
+                case "1":
+                    newProduct = new RegularProduct(newId, name, description, new Price() { ItemPrice = price, Currency = currency }, unitType, maxInStock);
+                    break;
+
+                case "2":
+                    newProduct = new BulkProduct(newId++, name, description, new Price() { ItemPrice = price, Currency = currency }, maxInStock);
+                    break;
+
+                case "3":
+                    Console.Write("Enter the number storage instructions: ");
+                    string storageInstructions = Console.ReadLine() ?? string.Empty;
+
+                    Console.Write("Enter the expiry date: ");
+                    DateTime expiryDate = DateTime.Parse(Console.ReadLine() ?? string.Empty);
+
+                    newProduct = new FreshProduct(newId++, name, description, new Price() { ItemPrice = price, Currency = currency }, unitType, maxInStock);
+
+                    FreshProduct? fp = newProduct as FreshProduct;
+                    fp.StorageInstructions = storageInstructions;
+                    fp.ExpiryDateTime = expiryDate;
+
+                    if (newProduct != null)
+                        inventory.Add(fp);
+
+                    //fix so that we don't add it again
+                    newProduct = null;
+
+                    break;
+
+                case "4":
+                    Console.Write("Enter the number of items per box: ");
+                    int numberInBox = int.Parse(Console.ReadLine() ?? "0");
+
+                    newProduct = new BoxedProduct(newId++, name, description, new Price() { ItemPrice = price, Currency = currency }, maxInStock, numberInBox);
+                    break;
+            }
+
+            if (newProduct != null)
+                inventory.Add(newProduct);
+        }
+
+        private static void ShowAllUnitTypes()
+        {
+            int i = 1;
+            foreach (string name in Enum.GetNames(typeof(UnitType)))
+            {
+                Console.WriteLine($"{i}. {name}");
+                i++;
+            }
+        }
+
+        private static void ShowAllCurrencies()
+        {
+            int i = 1;
+            foreach (string name in Enum.GetNames(typeof(Currency)))
+            {
+                Console.WriteLine($"{i}. {name}");
+                i++;
             }
         }
 

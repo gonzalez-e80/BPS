@@ -4,17 +4,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BethanysPieShop.InventoryManagement.Domain.Contracts;
 
 namespace BethanysPieShop.InventoryManagement.Domain.ProductManagement
 {
-    public partial class Product
+    public abstract partial class Product : ICloneable
     {
 
         private int id;
         private string name = string.Empty;
         private string? description;
 
-        private int maxItemsInStock = 0;
+        protected int maxItemsInStock = 0;
+
 
         public int Id
         {
@@ -55,8 +57,8 @@ namespace BethanysPieShop.InventoryManagement.Domain.ProductManagement
 
         public UnitType UnitType { get; set; }
 
-        public int AmountInStock { get; private set; }
-        public bool IsBelowStockTreshold { get; private set; }
+        public int AmountInStock { get; protected set; }
+        public bool IsBelowStockTreshold { get; protected set; }
 
 
         public Product(int id) : this(id, string.Empty)
@@ -85,7 +87,7 @@ namespace BethanysPieShop.InventoryManagement.Domain.ProductManagement
             }
         }
 
-        public void UseProduct(int items)
+        public virtual void UseProduct(int items)
         {
             if (items <= AmountInStock)
             {
@@ -102,10 +104,12 @@ namespace BethanysPieShop.InventoryManagement.Domain.ProductManagement
             }
         }
 
-        public void IncreaseStock()
-        {
-            AmountInStock++;
-        }
+        //public virtual void IncreaseStock()
+        //{
+        //    AmountInStock++;
+        //}
+
+        public abstract void IncreaseStock();
 
         public virtual void IncreaseStock(int amount)
         {
@@ -121,10 +125,13 @@ namespace BethanysPieShop.InventoryManagement.Domain.ProductManagement
                 Log($"{CreateSimpleProductRepresentation} stock overflow. {newStock - AmountInStock} item(s) ordere that couldn't be stored.");
             }
 
-            UpdateLowStock();
+            if (AmountInStock > StockTreshold)
+            {
+                IsBelowStockTreshold = false;
+            }
         }
 
-        protected void DecreaseStock(int items, string reason)
+        protected virtual void DecreaseStock(int items, string reason)
         {
             if (items <= AmountInStock)
             {
@@ -136,26 +143,24 @@ namespace BethanysPieShop.InventoryManagement.Domain.ProductManagement
                 AmountInStock = 0;
             }
 
-            UpdateLowStock();
-
             Log(reason);
         }
 
         //part of public interface
         public void UpdateLowStock()
         {
-            if (AmountInStock < StockTreshold)//for now a fixed value
+            if (AmountInStock < StockTreshold)
             {
                 IsBelowStockTreshold = true;
             }
         }
 
-        public string DisplayDetailsShort()
+        public virtual string DisplayDetailsShort()
         {
             return $"{Id}. {Name} \n{AmountInStock} items in stock";
         }
 
-        public string DisplayDetailsFull()
+        public virtual string DisplayDetailsFull()
         {
             StringBuilder sb = new StringBuilder();
 
@@ -171,11 +176,11 @@ namespace BethanysPieShop.InventoryManagement.Domain.ProductManagement
             //return DisplayDetailsFull("");
         }
 
-        public string DisplayDetailsFull(string extraDetails)
+        public virtual string DisplayDetailsFull(string extraDetails)
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.Append($"{Id} {Name} \n{Description}\n{Price}\n{AmountInStock} item(s) in stock");
+            sb.Append($"{Id} {Name} \n{Description}\n{AmountInStock} item(s) in stock");
 
             sb.Append(extraDetails);
 
@@ -186,5 +191,12 @@ namespace BethanysPieShop.InventoryManagement.Domain.ProductManagement
 
             return sb.ToString();
         }
+
+        protected virtual double GetProductStockValue()
+        {
+            return Price.ItemPrice * AmountInStock;
+        }
+
+        public abstract object Clone();
     }
 }
